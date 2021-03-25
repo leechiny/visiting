@@ -1,0 +1,74 @@
+<div class="row justify-content-center pt-4">
+
+  <div class="col-8">
+
+    <form [formGroup]='visitForm'>
+      <div class="form-group">
+
+        <app-digital-clock></app-digital-clock>
+
+        <div>
+          <label for="nric">NRIC</label>
+          <input type="text" class="form-control uppercase" id="nric" placeholder="NRIC" formControlName="nric"
+            maxlength="9" #nricInput
+            [(ngModel)]="visitor.nric"
+            (input)="onNricChange()"
+            (keyup.enter)="onSubmit()"
+            [ngClass]="{'is-invalid':visitForm.controls['nric'].invalid && visitForm.controls['nric'].dirty}">
+          <div class="invalid-feedback">Invalid NRIC.</div>
+        </div>
+
+        <div>
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" placeholder="Name" formControlName="name"
+            [(ngModel)]="visitor.name"
+            formControlName="name"
+            maxlength="30"
+            [ngClass]="{'is-invalid':visitForm.controls['name'].invalid && visitForm.controls['name'].dirty}">
+          <div class="invalid-feedback">Invalid name.</div>
+        </div>
+
+        <div>
+          <label for="phoneNo">Mobile Number</label>
+          <input type="text" class="form-control" id="phoneNo" placeholder="Phone Number" formControlName="phoneNo"
+            formControlName="phoneNo"
+            maxlength="8"
+            [(ngModel)]="visitor.phoneNo"
+            [ngClass]="{'is-invalid':visitForm.controls['phoneNo'].invalid && visitForm.controls['phoneNo'].dirty}">
+          <div class="invalid-feedback">Invalid mobile number.</div>
+        </div>
+
+        <div class="btn-toolbar mt-3">
+          <button type="button" class="btn btn-primary mr-3" (click)="onSubmit()" [disabled]="visitForm.invalid" #entry>Entry</button>
+          <button type="button" class="btn btn-primary" (click)="onClear()">Clear</button>
+        </div>
+
+      </div>
+    </form>
+
+  </div>
+
+</div>
+
+<ngx-spinner></ngx-spinner>
+
+<ng-template #okdialog>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Entry Created</h4>
+  </div>
+  <div class="modal-body">
+    <p>Entry Time: {{entryTime | date: 'h:mm:ss a'}}</p>
+  </div>
+</ng-template>
+
+<ng-template #errordialog let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Error!</h4>
+  </div>
+  <div class="modal-body">
+    <p>Please try again!</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
