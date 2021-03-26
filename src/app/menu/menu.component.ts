@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
@@ -9,17 +10,17 @@ export class MenuComponent implements OnInit {
 
   isUserLoggedIn = false;
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
 
   navigateToVisiting() {
-    // TODO:
+    this.router.navigate(['visit']);
   }
 
   navigateToReport() {
-    // TODO:
+    this.router.navigate(['report']);
   }
 
   logout() {

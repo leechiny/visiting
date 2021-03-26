@@ -8,15 +8,30 @@ import com.visiting.repository.VisitorRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 @Service
 public class VisitingService {
 
   private static final Logger logger = LoggerFactory.getLogger(VisitingService.class);
+
+  final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy");
+  final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
   @Autowired
   VisitorEntryRepo visitorEntryRepo;
@@ -28,6 +43,28 @@ public class VisitingService {
     return visitorRepo.findByHashNricIgnoreCase(hash);
   }
 
+  public List<VisitorEntry> getVisitForDate(Timestamp date, int pageNo, int pageSize) {
+
+    Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by("id"));
+
+    // Start of day
+    LocalDateTime startOfDay = date.toLocalDateTime().toLocalDate().atStartOfDay();
+    Timestamp fromDate = Timestamp.valueOf(startOfDay);
+
+    // End of date
+    LocalDateTime endOfDate = startOfDay.toLocalDate().atTime(LocalTime.MAX);
+    Timestamp tillDate = Timestamp.valueOf(endOfDate);
+
+    Page<VisitorEntry> pagedResult = visitorEntryRepo.findAllVisitorEntryBetweenDate(fromDate, tillDate, paging);
+
+    if(pagedResult.hasContent()) {
+      return pagedResult.getContent();
+    } else {
+      return new ArrayList<VisitorEntry>();
+    }
+
+  }
+
   @Transactional
   public VisitorEntry createEntry(Visitor visitor) {
 
@@ -36,7 +73,7 @@ public class VisitingService {
     // Check whether the visitor exists and if not create
     if ( dbVisitor == null ) {
       logger.debug("creating visitor");
-      visitorRepo.save(visitor);
+      dbVisitor = visitorRepo.save(visitor);
     }
     // Check whether any changes and if yes update visitor
     else {
@@ -52,7 +89,7 @@ public class VisitingService {
     logger.debug("creating entry for visitor");
     // Create an entry
     VisitorEntry entry = new VisitorEntry();
-    entry.setHashNRIC(visitor.getHashNric());
+    entry.setVisitor(dbVisitor);
     entry.setTimestamp(new Timestamp(System.currentTimeMillis()));
     visitorEntryRepo.save(entry);
 

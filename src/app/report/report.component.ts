@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
+import { DataService } from '../service/data.service';
+import { map } from 'rxjs/operators';
+import { NgxSpinnerService } from 'ngx-spinner';
+
 
 @Component({
   selector: 'app-report',
@@ -7,9 +12,44 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ReportComponent implements OnInit {
 
-  constructor() { }
+
+  date!: { year: number, month: number, day: number };
+
+  constructor(private calendar: NgbCalendar,
+    private spinner: NgxSpinnerService,
+    private dataService: DataService) { }
 
   ngOnInit(): void {
+    this.date = this.calendar.getToday();
+  }
+
+  onClick() {
+
+    console.log('selected : ' + this.date.year + '-' + this.date.month + '-' + this.date.day)
+    this.spinner.show();
+    this.dataService.downloadReport(this.date.year + '-' + this.date.month + '-' + this.date.day).pipe(
+      map(data => {
+
+        let blob = new Blob([data], {
+          type: 'application/pdf'
+        });
+
+        var fileURL: any = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = fileURL;
+        a.target = '_blank';
+        a.click();
+
+      })).subscribe(
+        () => {
+          this.spinner.hide();
+        },
+        (error) => {
+          console.log('error');
+          this.spinner.hide();
+        }
+
+      )
   }
 
 }

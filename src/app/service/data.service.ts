@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { VisitingEntry } from '../model/visiting-entry';
 import { Visitor } from '../model/visitor';
 import * as CryptoJS from 'crypto-js';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -36,7 +36,15 @@ export class DataService {
     return this.http.get<Visitor>(environment.restUrl + '/api/query/' + v.hashNric );
   }
 
+  downloadReport(date: string): Observable<any> {
+    let headerOptions = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/pdf'
+    });
+    let requestOptions = { headers: headerOptions, responseType: 'blob' as 'blob' };
+    return this.http.get(environment.restUrl + '/api/report/' + date, requestOptions);
 
+  }
 }
 
 class _Visitor {
