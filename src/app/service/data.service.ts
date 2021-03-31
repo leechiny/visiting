@@ -39,12 +39,28 @@ export class DataService {
   downloadReport(date: string): Observable<any> {
     let headerOptions = new HttpHeaders({
         'Content-Type': 'application/json',
-        'Accept': 'application/pdf'
+        'Accept': 'application/pdf',
     });
-    let requestOptions = { headers: headerOptions, responseType: 'blob' as 'blob' };
+    let requestOptions = { headers: headerOptions, responseType: 'blob' as 'blob', withCredentials: true};
     return this.http.get(environment.restUrl + '/api/report/' + date, requestOptions);
 
   }
+
+  validateUser(name: string, password: string): Observable<{result: string}> {
+    const authData = btoa(`${name}:${password}`);
+    const headers = new HttpHeaders().append( 'Authorization', 'Basic ' + authData);
+    return this.http.get<{result: string}>(environment.restUrl + '/api/basicAuth/validate', { headers,  withCredentials: true } );
+  }
+
+  getRole(): Observable<{role: string}> {
+    const headers = new HttpHeaders().append('X-Requested-With', 'XMLHttpRequest');
+    return this.http.get<{role: string}>(environment.restUrl + '/api/currentUserRole', { headers, withCredentials: true} );
+  }
+  
+  logout(): Observable<string> {
+    return this.http.get<string>(environment.restUrl + '/api/logout', {withCredentials: true} );  
+  }
+
 }
 
 class _Visitor {

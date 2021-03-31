@@ -13,10 +13,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DigitalClockComponent } from './digital-clock/digital-clock.component';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AuthRouteGuardService } from './service/auth-route-guard.service';
 
 const routes: Routes = [
   {path: 'visit', component: VisitComponent},
-  {path: 'report', component: ReportComponent},
+  {path: 'report', component: ReportComponent, canActivate: [AuthRouteGuardService] },
   {path: 'login', component: LoginComponent},
   {path: '', component: VisitComponent},
   {path: '404', component: PageNotFoundComponent},
@@ -29,6 +30,7 @@ const routes: Routes = [
     MenuComponent,
     VisitComponent,
     ReportComponent,
+    LoginComponent,
     DigitalClockComponent
   ],
   imports: [

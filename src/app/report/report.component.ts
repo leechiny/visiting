@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { DataService } from '../service/data.service';
 import { map } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
-
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { AuthService } from '../service/auth.service';
 
 @Component({
   selector: 'app-report',
@@ -15,8 +16,11 @@ export class ReportComponent implements OnInit {
 
   date!: { year: number, month: number, day: number };
 
+  @ViewChild('errordialog') errordialog: any; 
+
   constructor(private calendar: NgbCalendar,
     private spinner: NgxSpinnerService,
+    private modalService: NgbModal,
     private dataService: DataService) { }
 
   ngOnInit(): void {
@@ -45,8 +49,8 @@ export class ReportComponent implements OnInit {
           this.spinner.hide();
         },
         (error) => {
-          console.log('error');
           this.spinner.hide();
+          this.modalService.open(this.errordialog, {centered: true, ariaLabelledBy: 'modal-basic-title'})
         }
 
       )
